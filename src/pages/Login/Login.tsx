@@ -3,26 +3,22 @@ import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  ActivityIndicator,
+  Image,
 } from 'react-native';
 import {useLogin} from './useLogin';
+import {Button} from '../../components/Button';
 import THEME from '../../theme/theme';
 import type {LoginScreenProps} from '../../types/navigation.types';
 
 export const LoginScreen: React.FC<LoginScreenProps> = props => {
   const {
-    email,
-    setEmail,
-    password,
-    setPassword,
-    showPassword,
-    togglePasswordVisibility,
-    handleLogin,
+    phoneNumber,
+    setPhoneNumber,
+    handleSendOTP,
     isLoading,
   } = useLogin(props);
 
@@ -34,64 +30,60 @@ export const LoginScreen: React.FC<LoginScreenProps> = props => {
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled">
         <View style={styles.content}>
+          {/* Logo */}
+          <View style={styles.logoContainer}>
+            <Image
+              source={require('../../assets/images/logo.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+          </View>
+
           <View style={styles.header}>
-            <Text style={styles.title}>Welcome Back</Text>
-            <Text style={styles.subtitle}>Sign in to continue</Text>
+            <Text style={styles.title}>Welcome to Fastays</Text>
+            <Text style={styles.subtitle}>Enter your mobile number to continue</Text>
           </View>
 
           <View style={styles.form}>
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Email</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter your email"
-                placeholderTextColor={THEME.colors.text.disabled}
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                editable={!isLoading}
-              />
-            </View>
-
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Password</Text>
-              <View style={styles.passwordContainer}>
+              <Text style={styles.label}>Mobile Number</Text>
+              <View style={styles.phoneInputContainer}>
+                <View style={styles.countryCodeContainer}>
+                  <Image
+                    source={require('../../assets/images/flag.png')}
+                    style={styles.flagIcon}
+                    resizeMode="contain"
+                  />
+                  <Text style={styles.countryCode}>+91</Text>
+                </View>
                 <TextInput
-                  style={styles.passwordInput}
-                  placeholder="Enter your password"
+                  style={styles.phoneInput}
+                  placeholder="Enter mobile number"
                   placeholderTextColor={THEME.colors.text.disabled}
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry={!showPassword}
+                  value={phoneNumber}
+                  onChangeText={setPhoneNumber}
+                  keyboardType="phone-pad"
+                  maxLength={10}
                   editable={!isLoading}
                 />
-                <TouchableOpacity
-                  onPress={togglePasswordVisibility}
-                  style={styles.eyeButton}
-                  disabled={isLoading}>
-                  <Text style={styles.eyeText}>{showPassword ? '👁️' : '👁️‍🗨️'}</Text>
-                </TouchableOpacity>
               </View>
             </View>
 
-            <TouchableOpacity
-              style={[styles.loginButton, isLoading && styles.loginButtonDisabled]}
-              onPress={handleLogin}
-              disabled={isLoading}>
-              {isLoading ? (
-                <ActivityIndicator color={THEME.colors.text.light} />
-              ) : (
-                <Text style={styles.loginButtonText}>Sign In</Text>
-              )}
-            </TouchableOpacity>
+            <Button
+              title="Continue"
+              onPress={handleSendOTP}
+              loading={isLoading}
+              disabled={isLoading}
+              style={styles.continueButton}
+            />
 
-            <View style={styles.demoInfo}>
-              <Text style={styles.demoText}>Demo Credentials:</Text>
-              <Text style={styles.demoCredentials}>
-                Email: demo@fastays.com
+            <View style={styles.termsContainer}>
+              <Text style={styles.termsText}>
+                By continuing, you agree to our{' '}
+                <Text style={styles.termsLink}>Terms of Service</Text>
+                {' '}and{' '}
+                <Text style={styles.termsLink}>Privacy Policy</Text>
               </Text>
-              <Text style={styles.demoCredentials}>Password: password123</Text>
             </View>
           </View>
         </View>
@@ -113,20 +105,30 @@ const styles = StyleSheet.create({
     padding: THEME.spacing.medium,
     justifyContent: 'center',
   },
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: THEME.spacing.xlarge,
+  },
+  logo: {
+    width: 120,
+    height: 120,
+  },
   header: {
     marginBottom: THEME.spacing.xlarge,
   },
   title: {
-    fontSize: THEME.typography.fontSize.h1,
+    fontSize: THEME.typography.fontSize.h2,
     fontWeight: THEME.typography.fontWeight.bold as any,
     color: THEME.colors.text.primary,
     fontFamily: THEME.typography.fontFamily.primary,
     marginBottom: THEME.spacing.small,
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: THEME.typography.fontSize.body,
     color: THEME.colors.text.secondary,
     fontFamily: THEME.typography.fontFamily.primary,
+    textAlign: 'center',
   },
   form: {
     width: '100%',
@@ -141,72 +143,57 @@ const styles = StyleSheet.create({
     marginBottom: THEME.spacing.small,
     fontFamily: THEME.typography.fontFamily.primary,
   },
-  input: {
-    backgroundColor: THEME.colors.card,
-    borderRadius: THEME.borderRadius.regular,
-    padding: THEME.spacing.regular,
-    fontSize: THEME.typography.fontSize.body,
-    color: THEME.colors.text.primary,
-    borderWidth: 1,
-    borderColor: THEME.colors.border,
-    fontFamily: THEME.typography.fontFamily.primary,
-  },
-  passwordContainer: {
+  phoneInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: THEME.colors.card,
     borderRadius: THEME.borderRadius.regular,
     borderWidth: 1,
     borderColor: THEME.colors.border,
+    paddingHorizontal: THEME.spacing.regular,
   },
-  passwordInput: {
+  countryCodeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingRight: THEME.spacing.regular,
+    borderRightWidth: 1,
+    borderRightColor: THEME.colors.border,
+    marginRight: THEME.spacing.regular,
+  },
+  flagIcon: {
+    width: 24,
+    height: 24,
+    marginRight: THEME.spacing.small,
+  },
+  countryCode: {
+    fontSize: THEME.typography.fontSize.body,
+    fontWeight: THEME.typography.fontWeight.medium as any,
+    color: THEME.colors.text.primary,
+    fontFamily: THEME.typography.fontFamily.primary,
+  },
+  phoneInput: {
     flex: 1,
     padding: THEME.spacing.regular,
     fontSize: THEME.typography.fontSize.body,
     color: THEME.colors.text.primary,
     fontFamily: THEME.typography.fontFamily.primary,
   },
-  eyeButton: {
-    padding: THEME.spacing.regular,
-  },
-  eyeText: {
-    fontSize: 20,
-  },
-  loginButton: {
-    backgroundColor: THEME.colors.primary,
-    borderRadius: THEME.borderRadius.regular,
-    padding: THEME.spacing.regular,
-    alignItems: 'center',
+  continueButton: {
     marginTop: THEME.spacing.medium,
-    ...THEME.shadows.medium,
   },
-  loginButtonDisabled: {
-    opacity: 0.6,
-  },
-  loginButtonText: {
-    color: THEME.colors.text.light,
-    fontSize: THEME.typography.fontSize.button,
-    fontWeight: THEME.typography.fontWeight.semiBold as any,
-    fontFamily: THEME.typography.fontFamily.primary,
-  },
-  demoInfo: {
+  termsContainer: {
     marginTop: THEME.spacing.xlarge,
-    padding: THEME.spacing.regular,
-    backgroundColor: THEME.colors.surface,
-    borderRadius: THEME.borderRadius.regular,
-    borderWidth: 1,
-    borderColor: THEME.colors.border,
+    alignItems: 'center',
   },
-  demoText: {
-    fontSize: THEME.typography.fontSize.caption,
-    fontWeight: THEME.typography.fontWeight.semiBold as any,
-    color: THEME.colors.text.primary,
-    marginBottom: THEME.spacing.tiny,
-    fontFamily: THEME.typography.fontFamily.primary,
-  },
-  demoCredentials: {
+  termsText: {
     fontSize: THEME.typography.fontSize.caption,
     color: THEME.colors.text.secondary,
     fontFamily: THEME.typography.fontFamily.primary,
+    textAlign: 'center',
+    lineHeight: THEME.typography.lineHeight.small,
+  },
+  termsLink: {
+    color: THEME.colors.primary,
+    fontWeight: THEME.typography.fontWeight.semiBold as any,
   },
 });

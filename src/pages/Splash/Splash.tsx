@@ -1,23 +1,25 @@
 import React from 'react';
-import {View, Text, ActivityIndicator, StyleSheet} from 'react-native';
-import {useSplash} from './useSplash';
+import { View, Image, StatusBar, StyleSheet, Dimensions } from 'react-native';
 import THEME from '../../theme/theme';
-import type {SplashScreenProps} from '../../types/navigation.types';
+import { useSplash } from './useSplash';
+import type { SplashScreenProps } from '../../types/navigation.types';
 
-export const SplashScreen: React.FC<SplashScreenProps> = props => {
+const { width: windowWidth, height: windowHeight } = Dimensions.get('window');
+
+export const SplashScreen: React.FC<SplashScreenProps> = (props) => {
   useSplash(props);
-
   return (
     <View style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.logo}>Fastays</Text>
-        <Text style={styles.tagline}>Your Perfect Stay Awaits</Text>
-        <ActivityIndicator
-          size="large"
-          color={THEME.colors.primary}
-          style={styles.loader}
-        />
-      </View>
+      <StatusBar hidden />
+      <Image 
+        source={require('../../assets/images/splash.png')} 
+        style={styles.backgroundImage} 
+      />
+      <Image 
+        source={require('../../assets/images/logo.png')} 
+        style={styles.logo} 
+        resizeMode="contain"
+      />
     </View>
   );
 };
@@ -26,26 +28,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: THEME.colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
-  content: {
-    alignItems: 'center',
+  backgroundImage: {
+    ...StyleSheet.absoluteFillObject,
+    width: '100%',
+    height: '100%',
   },
   logo: {
-    fontSize: THEME.typography.fontSize.h1,
-    fontWeight: THEME.typography.fontWeight.bold as any,
-    color: THEME.colors.primary,
-    fontFamily: THEME.typography.fontFamily.primary,
-    marginBottom: THEME.spacing.small,
-  },
-  tagline: {
-    fontSize: THEME.typography.fontSize.body,
-    color: THEME.colors.text.secondary,
-    fontFamily: THEME.typography.fontFamily.primary,
-    fontWeight: THEME.typography.fontWeight.regular as any,
-  },
-  loader: {
-    marginTop: THEME.spacing.xlarge,
+    width: windowWidth * 0.4,
+    height: windowHeight * 0.2,
+    position: 'absolute',
+    alignSelf: 'center',
+    top: windowHeight * 0.15,
+    resizeMode: 'contain',
   },
 });

@@ -9,7 +9,6 @@ export const useSplash = ({navigation}: SplashScreenProps) => {
 
   const checkAuthStatus = async () => {
     try {
-      // Simulate splash screen delay
       await new Promise(resolve => setTimeout(resolve, 2000));
 
       const isAuthenticated = await authService.checkAuth();

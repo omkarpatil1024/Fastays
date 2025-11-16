@@ -3,48 +3,43 @@ import {Alert} from 'react-native';
 import {useApi} from '../../hooks/useApi';
 import {authService} from '../../services/auth.service';
 import type {LoginScreenProps} from '../../types/navigation.types';
-import type {LoginRequest} from '../../types/api.types';
 
 export const useLogin = ({navigation}: LoginScreenProps) => {
-  const [email, setEmail] = useState('demo@fastays.com');
-  const [password, setPassword] = useState('password123');
-  const [showPassword, setShowPassword] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
 
-  const loginMutation = useApi.useMutation(
-    (credentials: LoginRequest) => authService.login(credentials),
+  const sendOTPMutation = useApi.useMutation(
+    (phone: string) => authService.sendOTP(phone),
     {
       onSuccess: data => {
         if (data.success) {
-          navigation.replace('Home');
+          Alert.alert('Success', 'OTP sent successfully!');
+          navigation.navigate('OTPVerification', {phoneNumber});
         }
       },
       onError: (error: Error) => {
-        Alert.alert('Login Failed', error.message);
+        Alert.alert('Error', error.message);
       },
     },
   );
 
-  const handleLogin = () => {
-    if (!email || !password) {
-      Alert.alert('Validation Error', 'Please enter both email and password');
+  const handleSendOTP = () => {
+    if (!phoneNumber || phoneNumber.length !== 10) {
+      Alert.alert('Validation Error', 'Please enter a valid 10-digit mobile number');
       return;
     }
 
-    loginMutation.mutate({email, password});
-  };
+    if (!/^\d+$/.test(phoneNumber)) {
+      Alert.alert('Validation Error', 'Mobile number should contain only digits');
+      return;
+    }
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
+    sendOTPMutation.mutate(phoneNumber);
   };
 
   return {
-    email,
-    setEmail,
-    password,
-    setPassword,
-    showPassword,
-    togglePasswordVisibility,
-    handleLogin,
-    isLoading: loginMutation.isPending,
+    phoneNumber,
+    setPhoneNumber,
+    handleSendOTP,
+    isLoading: sendOTPMutation.isPending,
   };
 };

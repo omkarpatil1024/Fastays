@@ -37,6 +37,68 @@ export const authService = {
     throw new Error('Invalid credentials. Use demo@fastays.com / password123');
   },
 
+  sendOTP: async (phoneNumber: string): Promise<ApiResponse<{otpSent: boolean}>> => {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    // For demo purposes, accept any 10-digit phone number
+    if (phoneNumber && phoneNumber.length === 10) {
+      // Store the phone number temporarily for OTP verification
+      await AsyncStorage.setItem('TEMP_PHONE_NUMBER', phoneNumber);
+      
+      // In a real app, the OTP would be sent via SMS
+      // For demo, we'll use a fixed OTP: 1234
+      console.log('Demo OTP: 1234');
+      
+      return {
+        success: true,
+        data: {
+          otpSent: true,
+        },
+        message: 'OTP sent successfully. Use 1234 for demo.',
+      };
+    }
+
+    throw new Error('Invalid phone number');
+  },
+
+  verifyOTP: async (phoneNumber: string, otp: string): Promise<ApiResponse<LoginResponse>> => {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    // For demo purposes, accept OTP: 1234
+    if (otp === '1234') {
+      const response: ApiResponse<LoginResponse> = {
+        success: true,
+        data: {
+          user: {
+            id: '1',
+            email: `user_${phoneNumber}@fastays.com`,
+            name: 'User',
+            phone: phoneNumber,
+            avatar: 'https://i.pravatar.cc/150?img=1',
+            createdAt: new Date().toISOString(),
+          },
+          token: 'dummy_auth_token_' + Date.now(),
+          refreshToken: 'dummy_refresh_token_' + Date.now(),
+        },
+        message: 'OTP verified successfully',
+      };
+
+      // Store tokens and user data
+      await AsyncStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, response.data.token);
+      await AsyncStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, response.data.refreshToken);
+      await AsyncStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(response.data.user));
+      
+      // Clear temporary phone number
+      await AsyncStorage.removeItem('TEMP_PHONE_NUMBER');
+
+      return response;
+    }
+
+    throw new Error('Invalid OTP. Use 1234 for demo.');
+  },
+
   logout: async (): Promise<void> => {
     await AsyncStorage.multiRemove([
       STORAGE_KEYS.AUTH_TOKEN,

@@ -3,6 +3,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {SplashScreen} from '../pages/Splash/Splash';
 import {LoginScreen} from '../pages/Login/Login';
+import {OTPVerificationScreen} from '../pages/OTPVerification/OTPVerification';
 import {HomeScreen} from '../pages/Home/Home';
 import type {RootStackParamList} from '../types/navigation.types';
 
@@ -19,6 +20,7 @@ export const RootNavigator: React.FC = () => {
         }}>
         <Stack.Screen name="Splash" component={SplashScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="OTPVerification" component={OTPVerificationScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
       </Stack.Navigator>
     </NavigationContainer>
